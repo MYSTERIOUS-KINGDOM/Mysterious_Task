@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Odpowiedz na pytanie</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 400px; margin: 60px auto; padding: 2em; background: #f9f9f9; border-radius: 14px; box-shadow: 0 4px 16px #0002;}
+    input[type="text"] { font-size: 1.4em; padding: 0.3em; width: 90%; margin: 0.5em 0; }
+    button { font-size: 1.1em; padding: 0.4em 1.2em; border-radius: 8px; }
+    #response { margin-top: 1.3em; font-size: 1.2em; min-height: 2em;}
+    #question { margin-bottom: 0.8em; font-weight: bold;}
+  </style>
+</head>
+<body>
+  <h2 id="question">Pytanie</h2>
+  <form id="codeForm" autocomplete="off">
+    <input type="text" id="codeInput" maxlength="9" pattern="\d*" placeholder="Wpisz odpowiedź..." autofocus required>
+    <button type="submit">Sprawdź</button>
+  </form>
+  <div id="response"></div>
+
+  <script>
+    // Dane: mapowanie nr_pytania => poprawna odpowiedź i komunikaty
+    const questions = {
+      "1": {
+        prompt: "Jaki jest kod do zamku?",
+        correct: "123",
+        msgSuccess: "Brawo! To poprawny kod do zamku.",
+        msgFail: "To nie jest poprawna odpowiedź do tego pytania."
+      },
+      "2": {
+        prompt: "Podaj kod do skrzyni skarbów.",
+        correct: "333",
+        msgSuccess: "Gratulacje, skrzynia się otwiera!",
+        msgFail: "Niestety, spróbuj jeszcze raz."
+      },
+      // Dodaj kolejne pytania według schematu:
+      // "3": { prompt: "...", correct: "...", msgSuccess: "...", msgFail: "..." }
+    };
+
+    // Funkcja do pobrania parametru z URL
+    function getQueryParam(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+    }
+
+    // Odczytaj nr pytania z linku
+    const nrPytania = getQueryParam('pytanie');
+    const question = questions[nrPytania];
+
+    if (!question) {
+      document.getElementById('question').textContent = "Błędny lub nieznany kod QR (brak pytania).";
+      document.getElementById('codeForm').style.display = 'none';
+    } else {
+      document.getElementById('question').textContent = question.prompt;
+    }
+
+    document.getElementById('codeForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+      const answer = document.getElementById('codeInput').value.trim();
+      let response = "";
+      if (!/^\d{1,9}$/.test(answer)) {
+        response = "Odpowiedź musi być liczbą (1-9 cyfr).";
+      } else if (answer === question.correct) {
+        response = question.msgSuccess;
+      } else {
+        response = question.msgFail;
+      }
+      document.getElementById('response').textContent = response;
+      document.getElementById('codeInput').value = "";
+      document.getElementById('codeInput').focus();
+    });
+  </script>
+</body>
+</html>
