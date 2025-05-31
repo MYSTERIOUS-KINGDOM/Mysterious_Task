@@ -5,55 +5,57 @@
   <title>Odpowiedz na pytanie</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { font-family: Arial, sans-serif; max-width: 400px; margin: 60px auto; padding: 2em; background: #f9f9f9; border-radius: 14px; box-shadow: 0 4px 16px #0002;}
-    input[type="text"] { font-size: 1.4em; padding: 0.3em; width: 90%; margin: 0.5em 0; }
-    button { font-size: 1.1em; padding: 0.4em 1.2em; border-radius: 8px; }
+    body { font-family: Arial, sans-serif; background: #f9f9f9; }
+    .container { max-width: 450px; margin: 60px auto; padding: 2em; background: #fff; border-radius: 14px; box-shadow: 0 4px 16px #0002; }
+    input[type="text"] { font-size: 1.4em; padding: 0.3em; width: 95%; margin: 0.5em 0; }
+    button { font-size: 1.1em; padding: 0.4em 1.2em; border-radius: 8px; margin-top: 0.5em;}
     #response { margin-top: 1.3em; font-size: 1.2em; min-height: 2em;}
     #question { margin-bottom: 0.8em; font-weight: bold;}
   </style>
 </head>
 <body>
-  <h2 id="question">Pytanie</h2>
-  <form id="codeForm" autocomplete="off">
-    <input type="text" id="codeInput" maxlength="9" pattern="\d*" placeholder="Wpisz odpowiedź..." autofocus required>
-    <button type="submit">Sprawdź</button>
-  </form>
-  <div id="response"></div>
+  <div class="container">
+    <h2 id="question">Pytanie</h2>
+    <form id="codeForm" autocomplete="off">
+      <input type="text" id="codeInput" maxlength="9" pattern="\d*" placeholder="Wpisz odpowiedź..." autofocus required>
+      <br>
+      <button type="submit">Sprawdź</button>
+    </form>
+    <div id="response"></div>
+  </div>
 
   <script>
-    // Dane: mapowanie nr_pytania => poprawna odpowiedź i komunikaty
+    // Mapa pytań: numer pytania => { prompt: pytanie, correct: odpowiedź, msgSuccess: tekst sukcesu, msgFail: tekst błędu }
     const questions = {
-      "1": {
-        prompt: "W której strefie jest podejrzany?",
-        correct: "65",
-        msgSuccess: "Brawo! Przejdź do następnej karty!",
-        msgFail: "To nie jest poprawna odpowiedź do tego pytania."
-      },
-      "2": {
-        prompt: "Podaj kod do skrzyni skarbów.",
-        correct: "333",
-        msgSuccess: "Gratulacje, skrzynia się otwiera!",
-        msgFail: "Niestety, spróbuj jeszcze raz."
-
-        "3": {
-        prompt: "Podaj kod do skrzyni skarbów.",
-        correct: "333",
-        msgSuccess: "Gratulacje, skrzynia się otwiera!",
-        msgFail: "Niestety, spróbuj jeszcze raz."
-      
-      }
-      // Dodaj kolejne pytania według schematu:
-      // "3": { prompt: "...", correct: "...", msgSuccess: "...", msgFail: "..." }
-      
+      "1": { prompt: "W której strefie jest podejrzany?", correct: "65", msgSuccess: "Brawo! Przejdź do następnej karty!", msgFail: "To nie jest poprawna odpowiedź do tego pytania." },
+      "2": { prompt: "Podaj kod do skrzyni skarbów.", correct: "333", msgSuccess: "Gratulacje, skrzynia się otwiera!", msgFail: "Niestety, spróbuj jeszcze raz." },
+      "3": { prompt: "Jaki jest kod alarmowy?", correct: "987", msgSuccess: "Poprawnie!", msgFail: "Zła odpowiedź." },
+      "4": { prompt: "Kod wejścia do laboratorium?", correct: "420", msgSuccess: "Kod przyjęty!", msgFail: "Niepoprawny kod." },
+      "5": { prompt: "Numer identyfikacyjny mistrza?", correct: "27", msgSuccess: "To jest poprawny numer!", msgFail: "Spróbuj jeszcze raz." },
+      "6": { prompt: "Ile jest skrzyń w piwnicy?", correct: "12", msgSuccess: "Zgadza się!", msgFail: "Nie tym razem." },
+      "7": { prompt: "Podaj kod do sejfu.", correct: "159", msgSuccess: "Brawo, sejf otwarty!", msgFail: "Kod błędny." },
+      "8": { prompt: "Ile nóg mają wszystkie krzesła razem?", correct: "24", msgSuccess: "Dobrze!", msgFail: "Źle policzone." },
+      "9": { prompt: "Podaj liczbę okien w sali.", correct: "8", msgSuccess: "Poprawna odpowiedź!", msgFail: "Spróbuj ponownie." },
+      "10": { prompt: "Ile osób na obrazie?", correct: "5", msgSuccess: "Brawo!", msgFail: "Źle!" },
+      "11": { prompt: "Podaj sumę kluczy w dwóch skrzyniach.", correct: "6", msgSuccess: "Zgadza się!", msgFail: "Zła odpowiedź." },
+      "12": { prompt: "Kod startowy misji?", correct: "777", msgSuccess: "Poprawnie, zaczynaj!", msgFail: "Nie ten kod." },
+      "13": { prompt: "Podaj liczbę świec na stole.", correct: "3", msgSuccess: "Dobrze!", msgFail: "Źle policzone." },
+      "14": { prompt: "Kod do drzwi południowych?", correct: "456", msgSuccess: "Drzwi otwarte!", msgFail: "Kod błędny." },
+      "15": { prompt: "Ile kroków do wyjścia?", correct: "21", msgSuccess: "To prawda!", msgFail: "Spróbuj jeszcze raz." },
+      "16": { prompt: "Podaj kod awaryjny.", correct: "111", msgSuccess: "Kod przyjęty!", msgFail: "Niepoprawny kod." },
+      "17": { prompt: "Ile jest złotych monet w kufrze?", correct: "40", msgSuccess: "To się zgadza!", msgFail: "To nie jest dobra liczba." },
+      "18": { prompt: "Podaj kod do tajnej szuflady.", correct: "888", msgSuccess: "Szuflada otwarta!", msgFail: "Zły kod." },
+      "19": { prompt: "Numer stolika przy oknie?", correct: "9", msgSuccess: "Dobrze!", msgFail: "Źle." },
+      "20": { prompt: "Ile różnych ziół jest w skrzynce?", correct: "7", msgSuccess: "Poprawnie!", msgFail: "Spróbuj ponownie." }
     };
 
-    // Funkcja do pobrania parametru z URL
+    // Pobiera parametr z adresu URL (np. ?pytanie=3)
     function getQueryParam(name) {
       const urlParams = new URLSearchParams(window.location.search);
       return urlParams.get(name);
     }
 
-    // Odczytaj nr pytania z linku
+    // Odczytaj numer pytania z linku
     const nrPytania = getQueryParam('pytanie');
     const question = questions[nrPytania];
 
