@@ -9,8 +9,15 @@
     .container { max-width: 450px; margin: 60px auto; padding: 2em; background: #fff; border-radius: 14px; box-shadow: 0 4px 16px #0002; }
     input[type="text"] { font-size: 1.4em; padding: 0.3em; width: 95%; margin: 0.5em 0; }
     button { font-size: 1.1em; padding: 0.4em 1.2em; border-radius: 8px; margin-top: 0.5em;}
-    #response { margin-top: 1.3em; font-size: 1.2em; min-height: 2em;}
+    #response { 
+      margin-top: 1.3em; font-size: 1.2em; min-height: 2em;
+      padding: 0.7em 1em; border-radius: 8px; display: inline-block; 
+      transition: background 0.3s, color 0.3s;
+    }
     #question { margin-bottom: 0.8em; font-weight: bold;}
+    .good { background: #d8f5dd; color: #227733; border: 1px solid #87d39b;}
+    .bad { background: #fadada; color: #a02121; border: 1px solid #e99898;}
+    .neutral { background: #f1f1f1; color: #333; border: 1px solid #ccc;}
   </style>
 </head>
 <body>
@@ -69,15 +76,21 @@
     document.getElementById('codeForm').addEventListener('submit', function(event) {
       event.preventDefault();
       const answer = document.getElementById('codeInput').value.trim();
+      const responseDiv = document.getElementById('response');
       let response = "";
+      responseDiv.className = ""; // usuń stare klasy
+
       if (!/^\d{1,9}$/.test(answer)) {
         response = "Odpowiedź musi być liczbą (1-9 cyfr).";
+        responseDiv.classList.add("neutral");
       } else if (answer === question.correct) {
         response = question.msgSuccess;
+        responseDiv.classList.add("good");
       } else {
         response = question.msgFail;
+        responseDiv.classList.add("bad");
       }
-      document.getElementById('response').textContent = response;
+      responseDiv.textContent = response;
       document.getElementById('codeInput').value = "";
       document.getElementById('codeInput').focus();
     });
